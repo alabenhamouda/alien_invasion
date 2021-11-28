@@ -1,8 +1,9 @@
 import pygame
+from bullet import Bullet
 
 
 class Ship():
-    def __init__(self, ai_settings, screen):
+    def __init__(self, ai_settings, screen, bullets):
         self.screen = screen
         self.ai_settings = ai_settings
         self.image = pygame.image.load('images/ship.bmp')
@@ -16,6 +17,8 @@ class Ship():
         self.step = 0
         self.moving_right = False
         self.moving_left = False
+
+        self.bullets = bullets
 
     def blitme(self):
         """ Draw the ship on the screen """
@@ -49,3 +52,9 @@ class Ship():
         elif self.rect.left < self.screen_rect.left:
             self.rect.left = self.screen_rect.left
             self.center = self.rect.centerx
+
+    def fire(self):
+        """ Fire a bullet """
+        if(len(self.bullets) < self.ai_settings.bullets_allowed):
+            new_bullet = Bullet(self.screen, self.ai_settings, self)
+            self.bullets.add(new_bullet)

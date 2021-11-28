@@ -8,6 +8,8 @@ def check_keydown_events(event, ship):
         ship.direct_right()
     elif event.key == pygame.K_LEFT:
         ship.direct_left()
+    elif event.key == pygame.K_SPACE:
+        ship.fire()
 
 
 def check_keyup_events(event, ship):
@@ -29,9 +31,14 @@ def check_events(ship):
             check_keyup_events(event, ship)
 
 
-def update_screen(ai_settings, screen, ship):
+def update_screen(ai_settings, screen, ship, bullets):
     """ Update images on the screen and flip to the new screen. """
     screen.fill(ai_settings.bg_color)
     ship.blitme()
+    for bullet in bullets.sprites():
+        if bullet:
+            bullet.draw_bullet()
+        else:
+            bullets.remove(bullet)
 
     pygame.display.flip()
