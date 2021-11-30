@@ -158,6 +158,7 @@ class Game():
         if self.remaining_ships == 0:
             self.game_over()
         else:
+            self.settings.speedup_settings()
             self.ship.center_ship()
             self.bullets.empty()
             self.aliens.empty()
@@ -176,7 +177,8 @@ class Game():
         """ Display the score at the top of the screen """
         font = pygame.font.SysFont(
             self.settings.text_font, self.settings.text_size)
-        text = font.render("Score: " + str(self.score), True,
+        score_str = "{:,}".format(self.score)
+        text = font.render("Score: " + score_str, True,
                            self.settings.text_color)
         text_rect = text.get_rect()
         text_rect.centerx = self.screen.get_rect().centerx
