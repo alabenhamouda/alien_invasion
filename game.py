@@ -4,6 +4,7 @@ from settings import Settings
 from pygame.sprite import Group, groupcollide, spritecollideany
 from ship import Ship
 from alien import Alien
+from time import sleep
 
 
 class Game():
@@ -145,7 +146,7 @@ class Game():
         """ Display game over message and exit game """
         self.running = False
 
-    def restart(self, remove_ship):
+    def restart(self, remove_ship=False):
         """ Recenter ship and aliens, and create a new fleet """
         if remove_ship:
             self.remaining_ships -= 1
@@ -153,6 +154,7 @@ class Game():
         if self.remaining_ships == 0:
             self.game_over()
         else:
+            sleep(0.5)
             self.ship.center_ship()
             self.bullets.empty()
             self.aliens.empty()
