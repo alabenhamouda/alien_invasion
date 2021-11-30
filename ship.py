@@ -58,3 +58,6 @@ class Ship():
         if(len(self.bullets) < self.ai_settings.bullets_allowed):
             new_bullet = Bullet(self.screen, self.ai_settings, self)
             self.bullets.add(new_bullet)
+
+    def center_ship(self):
+        self.center = self.screen_rect.centerx
