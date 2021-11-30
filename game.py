@@ -25,6 +25,8 @@ class Game():
         self.aliens = Group()
         self.remaining_ships = self.settings.number_of_ships
 
+        self.score = 0
+
         # flag to indicate if the game is active
         self.running = True
 
@@ -34,7 +36,10 @@ class Game():
     def run(self):
         """ Start the main loop for the game. """
         while True:
+            self.clear_screen()
             self.check_events()
+            self.display_score()
+            self.display_remaining_ships()
             if self.running:
                 self.handle_shot_aliens()
                 self.ship.move()
@@ -43,6 +48,7 @@ class Game():
                 self.update_screen()
             else:
                 self.print_game_over()
+            pygame.display.flip()
 
     def check_keydown_events(self, event):
         """ Reponse to keydown events"""
@@ -132,15 +138,13 @@ class Game():
     def print_game_over(self):
         """ Show Game Over message """
         # display game over message
-        self.screen.fill(self.settings.bg_color)
         font = pygame.font.SysFont(
-            self.settings.text_font, self.settings.text_size)
+            self.settings.text_font, self.settings.game_over_text_size)
         text = font.render("Game Over", True, self.settings.text_color)
         textRect = text.get_rect()
         textRect.centerx = self.screen.get_rect().centerx
         textRect.centery = self.screen.get_rect().centery
         self.screen.blit(text, textRect)
-        pygame.display.flip()
 
     def game_over(self):
         """ Display game over message and exit game """
@@ -154,21 +158,44 @@ class Game():
         if self.remaining_ships == 0:
             self.game_over()
         else:
-            sleep(0.5)
             self.ship.center_ship()
             self.bullets.empty()
             self.aliens.empty()
             self.create_fleet()
+            sleep(0.3)
 
     def handle_shot_aliens(self):
         """ Check if any aliens have been shot and repopulate the fleet"""
-        groupcollide(self.bullets, self.aliens, True, True)
+        collisions = groupcollide(self.bullets, self.aliens, True, True)
+        aliens_shot = sum(len(l) for l in collisions.values())
+        self.score += aliens_shot * self.settings.alien_points
         if(len(self.aliens) == 0):
             self.restart()
 
+    def display_score(self):
+        """ Display the score at the top of the screen """
+        font = pygame.font.SysFont(
+            self.settings.text_font, self.settings.text_size)
+        text = font.render("Score: " + str(self.score), True,
+                           self.settings.text_color)
+        text_rect = text.get_rect()
+        text_rect.centerx = self.screen.get_rect().centerx
+        text_rect.centery = self.settings.text_top_margin
+        self.screen.blit(text, text_rect)
+
+    def display_remaining_ships(self):
+        """ Display the number of remaining ships """
+        font = pygame.font.SysFont(
+            self.settings.text_font, self.settings.text_size)
+        text = font.render("Ships Remaining: " + str(self.remaining_ships),
+                           True, self.settings.text_color)
+        text_rect = text.get_rect()
+        text_rect.right = self.screen.get_rect().right - self.settings.text_right_margin
+        text_rect.centery = self.settings.text_top_margin
+        self.screen.blit(text, text_rect)
+
     def update_screen(self):
         """ Update images on the screen and flip to the new screen. """
-        self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
         self.aliens.draw(self.screen)
         for bullet in self.bullets.sprites():
@@ -177,4 +204,6 @@ class Game():
             else:
                 self.bullets.remove(bullet)
 
-        pygame.display.flip()
+    def clear_screen(self):
+        """ Clear the screen to the background color """
+        self.screen.fill(self.settings.bg_color)
